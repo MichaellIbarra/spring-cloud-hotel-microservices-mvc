@@ -24,3 +24,8 @@ eureka:
     register-with-eureka: true # Permite que el servicio se registre en Eureka
     service-url:
       defaultZone: http://localhost:8761/eureka # URL del servidor Eureka al que se conectará el cliente
+service:
+  grade:
+    name: service-grade
+  hotel:
+    name: service-hotel

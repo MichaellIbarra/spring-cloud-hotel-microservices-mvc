@@ -10,4 +10,7 @@ public interface GradeService {
     List<Grade> getGradesByUserId(String id);
     List<Grade> getGradesByHotelId(String id);
 
+    Grade upateGrade(Grade grade);
+    void deleteGrade(String id);
+
 }

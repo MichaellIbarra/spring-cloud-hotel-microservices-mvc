@@ -33,4 +33,22 @@ public class GradeServiceImpl implements GradeService {
     public List<Grade> getGradesByHotelId(String id) {
         return gradeRepository.findByHotelId(id);
     }
+
+    @Override
+    public Grade upateGrade(Grade grade) {
+        return gradeRepository.findById(grade.getId())
+                .map(existing ->{
+                    existing.setUserId(grade.getUserId());
+                    existing.setHotelId(grade.getHotelId());
+                    existing.setGrade(grade.getGrade());
+                    existing.setFeedback(grade.getFeedback());
+                    return gradeRepository.save(existing);
+                })
+                .orElseThrow(() -> new RuntimeException("Grade not found with id: " + grade.getId()));
+    }
+
+    @Override
+    public void deleteGrade(String id) {
+        gradeRepository.deleteById(id);
+    }
 }
