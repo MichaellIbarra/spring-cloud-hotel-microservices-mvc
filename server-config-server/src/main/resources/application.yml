@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: server-config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/MichaellIbarra/spring-cloud-hotel-microservices-mvc.git
+          clone-on-start: true # establece que el repositorio se clone al iniciar el servidor
+          default-label: main # establece la rama por defecto
+          search-paths: hotel-config-repo # establece la ruta dentro del repositorio donde se encuentran los archivos de configuración
+          
