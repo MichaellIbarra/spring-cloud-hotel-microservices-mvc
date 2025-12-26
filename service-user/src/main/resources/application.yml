@@ -17,7 +17,7 @@ spring:
   config:
     import: configserver:http://localhost:8085 # Importa la configuración desde el servidor de configuración
   profiles:
-    active: dev # Perfil activo para el entorno de desarrollo
+    active: prod # Perfil activo para el entorno de desarrollo
 server:
   port: 8081
 #eureka:
