@@ -1,4 +1,3 @@
-## Config de servidor
 spring:
   application:
     name: service-user # Nombre unico del microservicio en Eureka
