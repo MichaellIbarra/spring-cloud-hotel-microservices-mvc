@@ -1,5 +1,7 @@
 ## Config de servidor
 spring:
+  profiles:
+    active: dev
   application:
     name: service-user # Nombre unico del microservicio en Eureka
   datasource:
@@ -16,8 +18,6 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
   config:
     import: configserver:http://localhost:8085 # Importa la configuración desde el servidor de configuración
-  profiles:
-    active: prod # Perfil activo para el entorno de desarrollo
 server:
   port: 8081
 #eureka:
