@@ -1,0 +1,29 @@
+## Config de servidor
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/msvc_users
+    username: root
+    password: matichelo17
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+server:
+  port: 8081
+eureka:
+ instance:
+   prefer-ip-address: true # Usa la dirección IP en lugar del nombre del host
+ client:
+   fetch-registry: true # Permite que el servicio obtenga la lista de otros servicios registrados
+   register-with-eureka: true # Permite que el servicio se registre en Eureka
+   service-url:
+     defaultZone: http://localhost:8761/eureka # URL del servidor Eureka al que se conectará el cliente
+service:
+  grade:
+    name: service-grade
+  hotel:
+    name: service-hotel
