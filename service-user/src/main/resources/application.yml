@@ -14,18 +14,22 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+  config:
+    import: configserver:http://localhost:8085 # Importa la configuración desde el servidor de configuración
+  profiles:
+    active: dev # Perfil activo para el entorno de desarrollo
 server:
   port: 8081
-eureka:
-  instance:
-    prefer-ip-address: true # Usa la dirección IP en lugar del nombre del host
-  client:
-    fetch-registry: true # Permite que el servicio obtenga la lista de otros servicios registrados
-    register-with-eureka: true # Permite que el servicio se registre en Eureka
-    service-url:
-      defaultZone: http://localhost:8761/eureka # URL del servidor Eureka al que se conectará el cliente
-service:
-  grade:
-    name: service-grade
-  hotel:
-    name: service-hotel
+#eureka:
+#  instance:
+#    prefer-ip-address: true # Usa la dirección IP en lugar del nombre del host
+#  client:
+#    fetch-registry: true # Permite que el servicio obtenga la lista de otros servicios registrados
+#    register-with-eureka: true # Permite que el servicio se registre en Eureka
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka # URL del servidor Eureka al que se conectará el cliente
+#service:
+#  grade:
+#    name: service-grade
+#  hotel:
+#    name: service-hotel

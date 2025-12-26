@@ -9,4 +9,7 @@ spring:
           clone-on-start: true # establece que el repositorio se clone al iniciar el servidor
           default-label: main # establece la rama por defecto
           search-paths: hotel-config-repo # establece la ruta dentro del repositorio donde se encuentran los archivos de configuración
-          
+#          username: YOUR_GIT_USERNAME # reemplaza con tu nombre de usuario de Git
+#          password: YOUR_GIT_PASSWORD # reemplaza con tu contraseña o token de acceso personal de
+server:
+  port: 8085
