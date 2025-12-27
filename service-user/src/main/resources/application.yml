@@ -38,6 +38,6 @@ resilience4j:
           - java.io.IOException
           - java.util.concurrent.TimeoutException
           - feign.FeignException # Agregar para errores de Feign
-          - java.net.ConnectException # Para errores de conexión
+          - java.net.ConnectException # Para errores de con1|exión
         ignore-exceptions:
           - java.lang.IllegalArgumentException # Excepto errores de validación
