@@ -3,7 +3,5 @@ spring:
     name: service-auth
   config:
     import: optional:configserver:http://localhost:8085
-server:
-  port: 8086
 jwt:
     secret: tuSecretDeAlMenos32CaracteresParaHS256Seguro
