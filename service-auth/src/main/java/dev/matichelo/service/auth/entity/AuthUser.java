@@ -1,9 +1,6 @@
 package dev.matichelo.service.auth.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 @NoArgsConstructor
@@ -11,11 +8,12 @@ import lombok.*;
 @Setter
 @Getter
 @Builder
+@Table(name = "auth_user")
 @Entity
 public class AuthUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Integer id;
     private String username;
     private String password;
 }
