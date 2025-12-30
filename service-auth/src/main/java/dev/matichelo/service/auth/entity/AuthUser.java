@@ -1,5 +1,6 @@
 package dev.matichelo.service.auth.entity;
 
+import dev.matichelo.service.auth.dto.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,4 +17,6 @@ public class AuthUser {
     private Integer id;
     private String username;
     private String password;
+     @Enumerated(EnumType.STRING)
+    private Role role;
 }

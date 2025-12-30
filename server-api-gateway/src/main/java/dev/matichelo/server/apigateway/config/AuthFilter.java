@@ -1,5 +1,6 @@
 package dev.matichelo.server.apigateway.config;
 
+import dev.matichelo.server.apigateway.dto.RequestDto;
 import dev.matichelo.server.apigateway.dto.TokenDto;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -36,15 +37,24 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
             if(chunks.length != 2 || !chunks[0].equals("Bearer")){
                 return onError(exchange, HttpStatus.UNAUTHORIZED);
             }
+            System.out.println("URI: " + exchange.getRequest().getPath().toString());
+            System.out.println("Method: " + exchange.getRequest().getMethod().name());
             return webClient.build()
                     .post() // metodo de la peticion
                     .uri("http://service-auth/api/v1/auth/validate?token="+ chunks[1]) // url del servicio de autenticacion
+                    .bodyValue(
+                            RequestDto.builder()
+                                    .uri(exchange.getRequest().getPath().toString())
+                                    .method(exchange.getRequest().getMethod().name())
+                                    .build()
+                    ) // cuerpo de la peticion
                     .retrieve() // enviar la peticion
                     .bodyToMono(TokenDto.class)
                     .map(t -> {
                         t.getToken();
                         return exchange;
-                    }).flatMap(chain::filter);
+                    }).flatMap(chain::filter)
+                    .onErrorResume(e -> onError(exchange, HttpStatus.UNAUTHORIZED));
 
         })));
     }
@@ -55,6 +65,7 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
         return res.setComplete();
     }
 
+    // es para configuraciones futuras si se necesitan
     public static class Config{
 
     }

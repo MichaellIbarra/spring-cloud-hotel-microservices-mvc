@@ -27,3 +27,24 @@ spring:
 
 jwt:
   secret: tuSecretDeAlMenos32CaracteresParaHS256Seguro
+
+protected-paths:
+  paths:
+    - uri: "/api/v1/users(/.*)?"  # ← Coincide con /api/v1/users y /api/v1/users/cualquier-cosa
+      methods:
+        - POST
+        - PUT
+        - DELETE
+        - PATCH
+      roles:
+        - ADMIN
+    - uri: "/api/v1/users(/.*)?"
+      methods:
+        - GET
+      roles:
+        - ADMIN
+        - USER
+    - uri: "/api/v1/public(/.*)?"
+      methods:
+        - GET
+      roles: []

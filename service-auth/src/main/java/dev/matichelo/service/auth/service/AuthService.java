@@ -1,6 +1,8 @@
 package dev.matichelo.service.auth.service;
 
 import dev.matichelo.service.auth.dto.AuthUserDto;
+import dev.matichelo.service.auth.dto.AuthUserRequest;
+import dev.matichelo.service.auth.dto.RequestDto;
 import dev.matichelo.service.auth.dto.TokenDto;
 import dev.matichelo.service.auth.entity.AuthUser;
 import dev.matichelo.service.auth.repository.AuthUserRepository;
@@ -19,7 +21,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
-    public AuthUser save(AuthUserDto authUserDto){
+    public AuthUser save(AuthUserRequest authUserDto){
         Optional<AuthUser> userOptional = authUserRepository.findByUsername(authUserDto.getUsername());
         if(userOptional.isPresent()){
             return null; // Usuario ya existe
@@ -28,6 +30,7 @@ public class AuthService {
         AuthUser authUser= AuthUser.builder()
                 .username(authUserDto.getUsername())
                 .password(password)
+                .role(authUserDto.getRole())
                 .build();
         return authUserRepository.save(authUser);
     }
@@ -43,8 +46,8 @@ public class AuthService {
         return null;
     }
 
-    public TokenDto validate(String token){
-        if(!jwtProvider.validateToken(token)){
+    public TokenDto validate(String token, RequestDto requestDto){
+        if(!jwtProvider.validateToken(token, requestDto)){
             return null;
         }
         String username = jwtProvider.getUsernameFromToken(token);

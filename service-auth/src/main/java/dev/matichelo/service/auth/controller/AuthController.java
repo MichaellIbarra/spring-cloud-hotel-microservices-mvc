@@ -1,6 +1,8 @@
 package dev.matichelo.service.auth.controller;
 
 import dev.matichelo.service.auth.dto.AuthUserDto;
+import dev.matichelo.service.auth.dto.AuthUserRequest;
+import dev.matichelo.service.auth.dto.RequestDto;
 import dev.matichelo.service.auth.dto.TokenDto;
 import dev.matichelo.service.auth.entity.AuthUser;
 import dev.matichelo.service.auth.service.AuthService;
@@ -26,8 +28,8 @@ public class AuthController {
     }
 
     @PostMapping("/validate")
-    public ResponseEntity<TokenDto> validate(@RequestParam String token){
-        TokenDto tokenDto = authService.validate(token);
+    public ResponseEntity<TokenDto> validate(@RequestParam String token, @RequestBody RequestDto requestDto){
+        TokenDto tokenDto = authService.validate(token, requestDto);
         if(tokenDto == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -35,7 +37,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthUser> register(@RequestBody AuthUserDto authUserDto){
+    public ResponseEntity<AuthUser> register(@RequestBody AuthUserRequest authUserDto){
         AuthUser authUser = authService.save(authUserDto);
         if(authUser == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
