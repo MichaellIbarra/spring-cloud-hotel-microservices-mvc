@@ -8,11 +8,14 @@ import dev.matichelo.service.user.entity.User;
 import dev.matichelo.service.user.exception.ResourceNotFoundException;
 import dev.matichelo.service.user.repository.UserRepository;
 import dev.matichelo.service.user.service.UserService;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -47,12 +50,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(String id) {
         User user = userRepository.findById(id).orElseThrow( () -> new ResourceNotFoundException("User not found with" +
-            " id: "+ id));
+                " id: "+ id));
 
 //        List<Grade> gradesList = Arrays.stream(
 //                restTemplate.getForObject("http://service-grade/api/v1/grades/users/"+ user.getId(), Grade[].class)
 //        ).toList();
         List<Grade> gradesList = gradeClient.getGradesByUserId(user.getId());
+
 
 //        List<Hotel> hotels = Arrays.stream(
 //                restTemplate.getForObject("http://service-hotel/api/v1/hotels", Hotel[].class)
@@ -67,12 +71,18 @@ public class UserServiceImpl implements UserService {
                 // En este caso, toMap toma dos funciones como argumentos: la primera función (Hotel::getId) se utiliza para obtener la clave del mapa (el ID del hotel),
                 // y la segunda función (Function.identity()) se utiliza para obtener el valor del mapa (el objeto Hotel en sí).
                 .collect(Collectors.toMap(Hotel::getId, Function.identity()));
-        logger.info(hotelMap.toString());
+
         List<Grade> gradeWithHotel  =  gradesList.stream().map(grade -> {
             logger.info("Grade Id: {}", grade.getId());
             // Llama el servicio de Hotel cada vez que itera
-//            ResponseEntity<Hotel> forEntity = restTemplate.getForEntity("http://msvc-hotel/api/v1/hotels/"+ grade.getHotelId(), Hotel.class);
-//            Hotel hotel = forEntity.getBody();
+//            try {
+//                ResponseEntity<Hotel> forEntity = restTemplate.getForEntity("http://service-hotel/api/v1/hotels/"+ grade.getHotelId(), Hotel.class);
+//                Hotel hotel = forEntity.getBody();
+//                grade.setHotel(hotel);
+//            } catch (HttpClientErrorException.NotFound e) {
+//                logger.warn("Hotel not found for id: {}", grade.getHotelId());
+//                grade.setHotel(null);
+//            }
 
             // Usando la lista de hoteles obtenida previamente pero genera muchas iteraciones BIG O(N*M)
 //            Hotel hotel = hotels.stream()

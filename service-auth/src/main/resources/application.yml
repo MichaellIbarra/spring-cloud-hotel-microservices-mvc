@@ -10,11 +10,9 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password:
-
   h2:
     console:
       enabled: true  # Accede a la BD en http://localhost:8080/h2-console
-
   # ✅ JPA - Creación automática de tablas
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
