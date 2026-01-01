@@ -27,3 +27,40 @@ service:
     name: service-grade
   hotel:
     name: service-hotel
+    
+management:
+  health:
+    circuitbreakers:
+      enabled: true # Habilita el endpoint de salud para los circuit breakers
+  endpoints:
+    web:
+      exposure:
+        include: health # Expone el endpoint de salud
+  endpoint:
+    health:
+      show-details: always
+resilience4j:
+  circuitbreaker:
+    instances:
+      ratingHotelBreaker:
+        register-health-indicator: true # Registra el indicador de salud para el circuit breaker
+        event-consumer-buffer-size: 10 # Tamaño del buffer para eventos del circuit breaker es decir cuantos eventos se almacenan
+        failure-rate-threshold: 50 # Umbral de tasa de fallos para abrir el circuito es decir porcentaje de fallos permitidos
+        minimum-number-of-calls: 5 # Número mínimo de llamadas antes de evaluar el estado del circuito
+        automatic-transition-from-open-to-half-open-enabled: true # Habilita la transición automática de abierto a semiabierto
+        wait-duration-in-open-state: 5000ms # Duración de espera en estado abierto antes de intentar la transición a semiabierto (en milisegundos)
+        permitted-number-of-calls-in-half-open-state: 3 # Número permitido de llamadas en estado semiabierto
+        sliding-window-size: 10 # Tamaño de la ventana deslizante para calcular la tasa de fallos es decir cuantas llamadas se consideran
+        sliding-window-type: COUNT_BASED # Tipo de ventana deslizante (basada en conteo o tiempo) es decir si se basa en numero de llamadas o en tiempo
+  retry:
+    instances:
+      ratingHotelRetry:
+        max-attempts: 3 # Número máximo de intentos de reintento
+        wait-duration: 2000ms # Duración de espera entre intentos de reintento (en milisegundos)
+        retry-exceptions:
+          - java.io.IOException
+          - java.util.concurrent.TimeoutException
+          - feign.FeignException # Agregar para errores de Feign
+          - java.net.ConnectException # Para errores de conexión
+        ignore-exceptions:
+          - java.lang.IllegalArgumentException # Excepto errores de validación

@@ -8,3 +8,46 @@ eureka:
     fetch-registry: true
     service-url:
         defaultZone: http://localhost:8761/eureka
+spring:
+  # ✅ Configuración de H2
+  datasource:
+    url: jdbc:h2:mem:authdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true  # Accede a la BD en http://localhost:8080/h2-console
+  # ✅ JPA - Creación automática de tablas
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update  # Crea/actualiza tablas automáticamente
+    show-sql: true      # Muestra las queries SQL en consola
+    properties:
+      hibernate:
+        format_sql: true
+
+jwt:
+  secret: tuSecretDeAlMenos32CaracteresParaHS256Seguro
+
+protected-paths:
+  paths:
+    - uri: "/api/v1/users(/.*)?"  # ← Coincide con /api/v1/users y /api/v1/users/cualquier-cosa
+      methods:
+        - POST
+        - PUT
+        - DELETE
+        - PATCH
+      roles:
+        - ADMIN
+    - uri: "/api/v1/users(/.*)?"
+      methods:
+        - GET
+      roles:
+        - ADMIN
+        - USER
+    - uri: "/api/v1/public(/.*)?"
+      methods:
+        - GET
+      roles: []
