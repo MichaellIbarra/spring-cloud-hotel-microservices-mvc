@@ -12,4 +12,4 @@ spring:
 #          username: YOUR_GIT_USERNAME # reemplaza con tu nombre de usuario de Git
 #          password: YOUR_GIT_PASSWORD # reemplaza con tu contraseña o token de acceso personal de
 server:
-  port: 8085
+  port: 9000
