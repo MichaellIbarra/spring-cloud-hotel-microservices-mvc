@@ -2,7 +2,7 @@ spring:
   application:
     name: service-grade # es importante que este nombre sea unico dentro del ecosistema de microservicios en Eureka
   mongodb:
-    uri: mongodb://admin:matichelo17@localhost:27017/grade-db?authSource=admin
+    uri: mongodb://admin:matichelo17@mongo-db:27017/grade-db?authSource=admin
 server:
   port: 8083
 eureka:

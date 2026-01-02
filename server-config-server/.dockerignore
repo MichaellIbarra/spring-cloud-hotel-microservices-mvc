@@ -1,0 +1,35 @@
+# Maven
+target/
+!target/service-user-*.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Spring Boot
+HELP.md
+
+# Temporary files
+*.tmp
+*.temp

@@ -1,76 +1,182 @@
 services:
-  # Red privada - Servicios internos
-  server-discovery:
-    image: server-discovery:latest
-    container_name: eureka-server
+  # ===== BASES DE DATOS =====
+  mysql-db:
+    image: mysql:8.0-debian
+    container_name: mysql-users
+    profiles:
+      - database
+      - all
+    environment:
+      MYSQL_ROOT_PASSWORD: matichelo17
+      MYSQL_DATABASE: msvc_users
+      MYSQL_USER: app_user
+      MYSQL_PASSWORD: matichelo17
     ports:
-      - "8761:8761"
+      - "3306:3306"
     networks:
       - hotel-network
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
+    volumes:
+      - mysql-data:/var/lib/mysql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
 
+  postgres-db:
+    image: postgres:15-alpine
+    container_name: postgres-hotels
+    profiles:
+      - database
+      - all
+    environment:
+      POSTGRES_DB: hotels_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: matichelo17
+    ports:
+      - "5432:5432"
+    networks:
+      - hotel-network
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  mongo-db:
+    image: mongo:7.0
+    container_name: mongo-grades
+    profiles:
+      - database
+      - all
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: matichelo17
+      MONGO_INITDB_DATABASE: grade-db
+    ports:
+      - "27017:27017"
+    networks:
+      - hotel-network
+    volumes:
+      - mongo-data:/data/db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ===== INFRAESTRUCTURA =====
   server-config-server:
-    image: server-config-server:latest
+    image: michaellibarra/server-config-server:latest
     container_name: config-server
-    ports:
-      - "8085:8085"
+    profiles:
+      - infrastructure
+      - all
+    networks:
+      - hotel-network
+    restart: unless-stopped
+
+  server-discovery:
+    image: michaellibarra/server-discovery:latest
+    container_name: eureka-server
+    profiles:
+      - infrastructure
+      - all
     networks:
       - hotel-network
     depends_on:
-      - server-discovery
+      - server-config-server
+    restart: unless-stopped
 
-  # API Gateway - Público
   server-api-gateway:
-    image: server-api-gateway:latest
+    image: michaellibarra/server-api-gateway:latest
     container_name: api-gateway
+    profiles:
+      - infrastructure
+      - all
     ports:
-      - "8084:8084"  # Puerto público
+      - "9002:9002"
     networks:
       - hotel-network
-    depends_on:
-      - server-discovery
-      - server-config-server
     environment:
-      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://server-discovery:8761/eureka
+      - CONFIG_SERVER_URL=http://server-config-server:9000
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://server-discovery:9001/eureka
+    depends_on:
+      - server-config-server
+      - server-discovery
+    restart: unless-stopped
 
-  # Microservicios - Red privada
+  # ===== MICROSERVICIOS =====
   service-auth:
-    image: service-auth:latest
+    image: michaellibarra/service-auth:latest
     container_name: auth-service
+    profiles:
+      - services
+      - all
     networks:
       - hotel-network
-    depends_on:
-      - server-discovery
-      - server-config-server
+    environment:
+      - CONFIG_SERVER_URL=http://server-config-server:9000
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://server-discovery:9001/eureka
+    restart: unless-stopped
 
   service-user:
-    image: service-user:latest
+    image: michaellibarra/service-user:latest
     container_name: user-service
+    profiles:
+      - services
+      - all
     networks:
       - hotel-network
-    depends_on:
-      - server-discovery
-      - server-config-server
+    environment:
+      - CONFIG_SERVER_URL=http://server-config-server:9000
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://server-discovery:9001/eureka
+    restart: unless-stopped
 
   service-hotel:
-    image: service-hotel:latest
+    image: michaellibarra/service-hotel:latest
     container_name: hotel-service
+    profiles:
+      - services
+      - all
     networks:
       - hotel-network
-    depends_on:
-      - server-discovery
-      - server-config-server
+    environment:
+      - CONFIG_SERVER_URL=http://server-config-server:9000
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://server-discovery:9001/eureka
+    restart: unless-stopped
 
   service-grade:
-    image: service-grade:latest
+    image: michaellibarra/service-grade:latest
     container_name: grade-service
+    profiles:
+      - services
+      - all
     networks:
       - hotel-network
-    depends_on:
-      - server-discovery
-      - server-config-server
+    environment:
+      - CONFIG_SERVER_URL=http://server-config-server:9000
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://server-discovery:9001/eureka
+    restart: unless-stopped
 
 networks:
   hotel-network:
     driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
+  postgres-data:
+    driver: local
+  mongo-data:
+    driver: local
+
+# ¿Qué hace bridge?
+# ✅ Crea una red aislada para los containers
+# ✅ Los containers pueden comunicarse entre sí por nombre
+# ✅ Permite acceso a internet desde los containers
+# ✅ Puedes exponer puertos al host (ports: - "9002:9002")
