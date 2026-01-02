@@ -78,6 +78,11 @@ services:
       - all
     networks:
       - hotel-network
+    environment:
+      - HOME=/tmp
+      - USER=configserver
+      - XDG_CONFIG_HOME=/tmp/.config
+      - JAVA_OPTS=-Duser.home=/tmp -Djgit.fs.debug=false
     restart: unless-stopped
 
   server-discovery:
@@ -174,7 +179,8 @@ volumes:
     driver: local
   mongo-data:
     driver: local
-
+  config-temp:
+    driver: local
 # ¿Qué hace bridge?
 # ✅ Crea una red aislada para los containers
 # ✅ Los containers pueden comunicarse entre sí por nombre
