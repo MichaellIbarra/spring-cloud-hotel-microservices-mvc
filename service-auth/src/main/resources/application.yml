@@ -2,4 +2,4 @@ spring:
   application:
     name: service-auth
   config:
-    import: optional:configserver:http://localhost:8085
+    import: configserver:${CONFIG_SERVER_URL:http://localhost:8085} # Importa la configuración desde el servidor de configuración

@@ -1,0 +1,76 @@
+services:
+  # Red privada - Servicios internos
+  server-discovery:
+    image: server-discovery:latest
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - hotel-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  server-config-server:
+    image: server-config-server:latest
+    container_name: config-server
+    ports:
+      - "8085:8085"
+    networks:
+      - hotel-network
+    depends_on:
+      - server-discovery
+
+  # API Gateway - Público
+  server-api-gateway:
+    image: server-api-gateway:latest
+    container_name: api-gateway
+    ports:
+      - "8084:8084"  # Puerto público
+    networks:
+      - hotel-network
+    depends_on:
+      - server-discovery
+      - server-config-server
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://server-discovery:8761/eureka
+
+  # Microservicios - Red privada
+  service-auth:
+    image: service-auth:latest
+    container_name: auth-service
+    networks:
+      - hotel-network
+    depends_on:
+      - server-discovery
+      - server-config-server
+
+  service-user:
+    image: service-user:latest
+    container_name: user-service
+    networks:
+      - hotel-network
+    depends_on:
+      - server-discovery
+      - server-config-server
+
+  service-hotel:
+    image: service-hotel:latest
+    container_name: hotel-service
+    networks:
+      - hotel-network
+    depends_on:
+      - server-discovery
+      - server-config-server
+
+  service-grade:
+    image: service-grade:latest
+    container_name: grade-service
+    networks:
+      - hotel-network
+    depends_on:
+      - server-discovery
+      - server-config-server
+
+networks:
+  hotel-network:
+    driver: bridge
