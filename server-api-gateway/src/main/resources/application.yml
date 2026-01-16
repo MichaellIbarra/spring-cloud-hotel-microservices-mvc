@@ -6,11 +6,11 @@ spring:
       server:
         webflux:
           routes:
-            - id: service-user # Identificador unico para la ruta
-              uri: lb://service-user # URL del servicio de usuario registrado en Eureka (usando balanceo de carga)
+            - id: service-user 
+              uri: lb://service-user 
               predicates: # Condiciones para enrutar solicitudes
-                - Path=/api/v1/users/** # Patron de ruta para enrutar solicitudes
-                - Method=GET,POST,PUT,DELETE # Metodos HTTP permitidos
+                - Path=/api/v1/users/** 
+                - Method=GET,POST,PUT,DELETE 
               filters:
                 - AuthFilter # Filtro personalizado para autenticacion
             - id: service-grade
